@@ -1,5 +1,17 @@
 # 技术架构设计
 
+## 目录
+
+- [总体架构](#总体架构)
+- [模块划分](#模块划分)
+- [请求流程](#请求流程)
+- [配置优先级](#配置优先级)
+- [数据模型](#数据模型)
+- [API 草案](#api-草案)
+- [并发与限流](#并发与限流)
+- [安全边界](#安全边界)
+- [开发约束](#开发约束)
+
 ## 总体架构
 
 ```mermaid
@@ -20,7 +32,7 @@ flowchart LR
 ### 前端
 
 - `app/page.tsx`：主生图工具页。
-- `app/GeneratorClient.tsx`：主生图交互，包括模式切换、上传、提示词、输出参数和发送内容预览。
+- `app/page.tsx` 内联脚本：主生图交互，包括模式切换、上传预览、提示词、输出参数和发送内容预览。
 - `app/login/page.tsx`：登录页。
 - `app/register/page.tsx`：自助注册页，注册后等待管理员审核。
 - `app/components/Topbar.tsx`：当前用户、部门、导航、退出登录。
@@ -73,7 +85,7 @@ flowchart LR
 敏感字段处理：
 
 - 部门 Gemini API Key 不返回给前端。
-- 设置页展示时仅显示掩码，例如 `AIza...abcd`。
+- 设置页展示时仅显示是否已配置，不回显 API Key 明文。
 - 不同部门保存不同 API Key。
 - 若用数据库保存 API Key，应进行服务端加密或至少限制文件权限。
 
@@ -158,8 +170,8 @@ flowchart LR
 | `output_format` | string | `png` 或 `jpg` |
 | `input_images` | json | 上传图片路径和 MIME |
 | `output_images` | json | 输出图片路径 |
-| `status` | string | `success` 或 `failed` |
-| `error_message` | text | 错误摘要 |
+| `status` | string | 当前成功任务写入 `success` |
+| `error_message` | text | 错误摘要；当前成功任务为空 |
 | `duration_ms` | integer | 耗时 |
 | `created_at` | datetime | 创建时间 |
 
@@ -283,7 +295,7 @@ flowchart LR
 
 ## 开发约束
 
-- 必须遵循 `../../.openclaw/workspace/archive/规范/2026-04-20-LLM-写代码规范.md`。
+- 必须遵循根目录 `AGENTS.md`。
 - 实现前明确假设和歧义；不确定时先确认。
 - 优先简单实现，不做未要求的扩展。
 - 修改保持局部化，避免无关重构。

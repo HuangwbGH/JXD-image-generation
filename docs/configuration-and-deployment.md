@@ -1,5 +1,15 @@
 # 配置与部署指南
 
+## 目录
+
+- [环境变量](#环境变量)
+- [设置页字段](#设置页字段)
+- [Docker Compose 草案](#docker-compose-草案)
+- [部署步骤](#部署步骤)
+- [运维检查](#运维检查)
+- [配置安全](#配置安全)
+- [开发约束](#开发约束)
+
 ## 环境变量
 
 建议提供 `.env.example`：
@@ -35,8 +45,8 @@ GENERATION_TIMEOUT_SECONDS=120
 
 ```env
 PROXY_ENABLED=true
-APP_HTTP_PROXY=http://192.168.1.27:20171
-APP_HTTPS_PROXY=http://192.168.1.27:20171
+APP_HTTP_PROXY=http://代理地址:端口
+APP_HTTPS_PROXY=http://代理地址:端口
 ```
 
 注意：代理配置必须只作用于本程序访问 Gemini 的请求，不要求也不建议把整台服务器配置为全局代理。实现时应在 Gemini 客户端底层 fetch/dispatcher 注入代理配置，避免影响服务器其他进程。
@@ -75,7 +85,7 @@ services:
       PORT: "32179"
       HOSTNAME: "0.0.0.0"
     volumes:
-      - ./storage:/app/storage
+      - ./storage:容器内运行数据目录
     restart: unless-stopped
 ```
 
@@ -113,6 +123,6 @@ services:
 
 ## 开发约束
 
-- 开发必须遵循 `../../.openclaw/workspace/archive/规范/2026-04-20-LLM-写代码规范.md`。
+- 开发必须遵循根目录 `AGENTS.md`。
 - Dockerfile 和 Compose 配置应面向 Linux OS。
 - 所有挂载、数据库和输出目录示例使用相对路径。
